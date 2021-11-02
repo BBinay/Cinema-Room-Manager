@@ -1,0 +1,144 @@
+package cinema;
+
+import java.util.Scanner;
+
+public class Cinema {
+    static char[][] arr;
+    static int rows;
+    static int seats;
+    static int rowNumber;
+    static int seatNumber;
+    static int selection;
+    static boolean action = true;
+    static int price1 = 10;
+    static int price2 = 8;
+    static int purchased = 0;
+    static int totalSeats;
+    static double percentage;
+    static int currentIncome = 0;
+    static int totalIncome = 0;
+    static boolean sold;
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Enter the number of rows:");
+        rows = scanner.nextInt(); // the number of rows
+
+        System.out.println("Enter the number of seats in each row:");
+        seats = scanner.nextInt(); // the number of seats in each row
+
+        totalSeats = rows * seats;
+
+        arr = new char[rows][seats];
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < seats; j++) {
+                arr[i][j] = 'S';
+            }
+        }
+
+        while (action) {
+            menu();
+            selection = scanner.nextInt();
+
+            if (selection == 0) {
+                exit();
+            } else if (selection == 1) {
+                showSeats();
+            } else if (selection == 2) {
+                pickSeat();
+            } else if (selection == 3) {
+                statistics();
+            }
+        }
+    }
+
+    public static void showSeats() {
+        System.out.println("\nCinema:");
+
+        for (int i = 1; i <= seats; i++) {
+            System.out.printf(i == 1 ? "  1 " : "%d ", i);
+        }
+        System.out.println();
+
+        for (int i = 0; i < rows; i++) {
+            System.out.printf("%d ", i + 1);
+            for (int j = 0; j < seats; j++) {
+                System.out.print(arr[i][j] + " ");
+            }
+            System.out.println();
+        }
+        System.out.println();
+    }
+
+    public static void buyTicket() {
+        if (totalSeats < 60) {
+            System.out.println("\nTicket price: $" + price1);
+            currentIncome += price1;
+        } else {
+            if (rowNumber <= rows / 2) {
+                System.out.println("\nTicket price: $" + price1);
+                currentIncome += price1;
+            } else {
+                System.out.println("\nTicket price: $" + price2);
+                currentIncome += price2;
+            }
+        }
+        arr[rowNumber - 1][seatNumber - 1] = 'B';
+        purchased++;
+    }
+
+    public static void exit() {
+        action = false;
+    }
+
+    public static void menu() {
+        System.out.println("\n1. Show the seats");
+        System.out.println("2. Buy a ticket");
+        System.out.println("3. Statistics");
+        System.out.println("0. Exit");
+    }
+
+    public static void statistics() {
+        System.out.printf("\nNumber of purchased tickets: %d", purchased);
+        calculatePercentage();
+        System.out.printf("\nPercentage: %.2f%%", percentage);
+        System.out.printf("\nCurrent income: $%d", currentIncome);
+        calculateTotalIncome();
+        System.out.printf("\nTotal income: $%d", totalIncome);
+    }
+
+    public static void pickSeat() {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("\nEnter a row number:");
+        rowNumber = scanner.nextInt();
+
+        System.out.println("Enter a seat number in that row:");
+        seatNumber = scanner.nextInt();
+
+        if (rows < rowNumber || seats < seatNumber) {
+            System.out.println("Wrong input!");
+        } else {
+            sold = arr[rowNumber - 1][seatNumber - 1] == 'B';
+            if (sold) {
+                System.out.println("That ticket has already been purchased!");
+                pickSeat();
+            } else {
+                buyTicket();
+            }
+        }
+    }
+
+    public static void calculateTotalIncome() {
+        if (totalSeats < 60) {
+            totalIncome = totalSeats * price1;
+        } else {
+            totalIncome = (rows / 2) * seats * price1 + (totalSeats - ((rows / 2) * seats)) * price2;
+        }
+    }
+
+    public static void calculatePercentage() {
+        percentage = (purchased / (double) totalSeats) * 100;
+    }
+}
